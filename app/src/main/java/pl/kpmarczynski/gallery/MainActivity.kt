@@ -11,7 +11,7 @@ import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
 
-    private val adapter: ImageAdapter = ImageAdapter(this)
+    private val adapter: GridImageAdapter = GridImageAdapter(this)
     private var currentImage: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,20 +20,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onPreviousButtonClick(view: View) {
-        updateCurrentImage(adapter.getPreviousPosition(currentImage!!))
+        updateCurrentImage(ImageRepository.getPreviousPosition(currentImage!!))
     }
 
     fun onNextButtonClick(view: View) {
-        updateCurrentImage(adapter.getNextPosition(currentImage!!))
+        updateCurrentImage(ImageRepository.getNextPosition(currentImage!!))
     }
 
     fun onHomeButtonClick(view: View) {
-        currentImage = null
         setupGridLayout()
     }
 
     private fun setupGridLayout() {
         setContentView(R.layout.activity_main)
+        currentImage = null
 
         val gridview: GridView = findViewById(R.id.gridview)
 
