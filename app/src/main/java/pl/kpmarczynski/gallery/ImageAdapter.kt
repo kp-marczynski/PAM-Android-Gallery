@@ -68,22 +68,12 @@ class ImageAdapter(private val mContext: Context) : BaseAdapter() {
         return (displayMetrics.widthPixels / rownum * 0.9).toInt()
     }
 
-//    fun getPreviousId(position: Int): Int {
-//        return getItemId(getPreviousPosition(position)).toInt()
-//    }
-
-    fun getNextId(position: Int): Int {
-        return getItemId(getNextPosition(position)).toInt()
-    }
-
     fun getNextPosition(position: Int): Int {
-        val next = if (position == mThumbIds.size - 1) 0 else position + 1
-        return next
+        return if (position == mThumbIds.size - 1) 0 else position + 1
     }
 
     fun getPreviousPosition(position: Int): Int {
-        val previous = if (position == 0) mThumbIds.size - 1 else position - 1
-        return previous
+        return if (position == 0) mThumbIds.size - 1 else position - 1
     }
 
 }

@@ -11,16 +11,28 @@ import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
 
-    var adapter: ImageAdapter? = null
-    var currentImage: Int? = null
+    private val adapter: ImageAdapter = ImageAdapter(this)
+    private var currentImage: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adapter = ImageAdapter(this)
         setupGridLayout()
     }
 
-    fun setupGridLayout() {
+    fun onPreviousButtonClick(view: View) {
+        updateCurrentImage(adapter.getPreviousPosition(currentImage!!))
+    }
+
+    fun onNextButtonClick(view: View) {
+        updateCurrentImage(adapter.getNextPosition(currentImage!!))
+    }
+
+    fun onHomeButtonClick(view: View) {
+        currentImage = null
+        setupGridLayout()
+    }
+
+    private fun setupGridLayout() {
         setContentView(R.layout.activity_main)
 
         val gridview: GridView = findViewById(R.id.gridview)
@@ -35,23 +47,10 @@ class MainActivity : AppCompatActivity() {
         gridview.setOnScrollListener(GridOnScrollListener())
     }
 
-    fun onPreviousButtonClick(view: View) {
-        updateCurrentImage(adapter?.getPreviousPosition(currentImage!!))
-    }
-
-    fun onNextButtonClick(view: View) {
-        updateCurrentImage(adapter?.getNextPosition(currentImage!!))
-    }
-
-    fun onHomeButtonClick(view: View) {
-        currentImage = null
-        setupGridLayout()
-    }
-
-    fun updateCurrentImage(imageId: Int?) {
+    private fun updateCurrentImage(imageId: Int?) {
         currentImage = imageId
         val imageView = findViewById<ImageView>(R.id.imageView)
-        imageView.setImageResource(adapter!!.getItemId(currentImage!!).toInt())
+        imageView.setImageResource(adapter.getItemId(currentImage!!).toInt())
         findViewById<TextView>(R.id.textView).text = currentImage.toString()
     }
 }
