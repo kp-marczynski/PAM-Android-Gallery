@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.GridView
 import android.widget.ImageView
+import android.widget.TextView
 
 
 class MainActivity : AppCompatActivity() {
@@ -51,6 +52,6 @@ class MainActivity : AppCompatActivity() {
         currentImage = imageId
         val imageView = findViewById<ImageView>(R.id.imageView)
         imageView.setImageResource(adapter!!.getItemId(currentImage!!).toInt())
-//        findViewById<TextView>(R.id.textView).id = currentImage!!
+        findViewById<TextView>(R.id.textView).text = currentImage.toString()
     }
 }

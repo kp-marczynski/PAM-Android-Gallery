@@ -9,38 +9,46 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" app:srcCompat="@drawable/sample_0"
             android:id="@+id/imageView"
-            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
-            android:contentDescription="TODO"/>
+            android:contentDescription="@string/singleimage"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp"
+            app:layout_constraintHorizontal_bias="0.503" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"/>
     <Button
             android:text="@string/home"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/homeButton"
-            app:layout_constraintBaseline_toBaselineOf="@+id/nextButton"
-            app:layout_constraintStart_toEndOf="@+id/previousButton"
-            app:layout_constraintEnd_toStartOf="@+id/nextButton" android:layout_marginEnd="9dp"
-            android:onClick="onHomeButtonClick"/>
+            android:onClick="onHomeButtonClick"
+            android:layout_marginBottom="40dp"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginStart="8dp"
+            app:layout_constraintStart_toStartOf="parent"/>
     <Button
             android:text="@string/next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/nextButton" android:layout_marginTop="22dp"
-            app:layout_constraintTop_toBottomOf="@+id/imageView" app:layout_constraintStart_toEndOf="@+id/homeButton"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="6dp"
-            android:onClick="onNextButtonClick"/>
+            android:id="@+id/nextButton"
+            android:onClick="onNextButtonClick"
+            app:layout_constraintStart_toEndOf="@+id/homeButton" android:layout_marginStart="25dp"
+            app:layout_constraintTop_toTopOf="@+id/homeButton"/>
     <Button
             android:text="@string/previous"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/previousButton"
-            app:layout_constraintHorizontal_chainStyle="packed" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBaseline_toBaselineOf="@+id/homeButton"
-            app:layout_constraintEnd_toStartOf="@+id/homeButton"
-            android:layout_marginEnd="15dp" android:onClick="onPreviousButtonClick"/>
+            android:onClick="onPreviousButtonClick"
+            app:layout_constraintTop_toTopOf="@+id/homeButton" app:layout_constraintEnd_toStartOf="@+id/homeButton"
+            android:layout_marginEnd="25dp"/>
     <TextView
-            android:text="TextView"
+            android:text="@string/textview"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" tools:layout_editor_absoluteY="44dp"
-            tools:layout_editor_absoluteX="163dp" android:id="@+id/textView"/>
+            android:layout_height="wrap_content"
+            android:textSize="36sp"
+            android:id="@+id/textView" android:layout_marginTop="32dp"
+            app:layout_constraintTop_toTopOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginStart="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:textAlignment="center"/>
 </android.support.constraint.ConstraintLayout>
