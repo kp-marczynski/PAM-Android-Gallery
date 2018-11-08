@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateCurrentImage(imagePosition: Int) {
         val imageView = findViewById<ImageView>(R.id.imageView)
         imageView.tag = imagePosition.toString()
-        imageView.setImageResource(ImageRepository.getImageId(imagePosition).toInt())
+        imageView.setImageResource(ImageRepository.getImageId(imagePosition))
         findViewById<TextView>(R.id.textView).text = imagePosition.toString()
     }
 }
