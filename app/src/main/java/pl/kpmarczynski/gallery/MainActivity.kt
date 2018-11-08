@@ -11,20 +11,22 @@ import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
 
-    private val adapter: GridImageAdapter = GridImageAdapter(this)
-    private var currentImage: Int? = null
+    private var adapter: GridImageAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        adapter = GridImageAdapter(this)
         setupGridLayout()
     }
 
     fun onPreviousButtonClick(view: View) {
-        updateCurrentImage(ImageRepository.getPreviousPosition(currentImage!!))
+        val position = Integer.parseInt(findViewById<ImageView>(R.id.imageView).tag.toString())
+        updateCurrentImage(ImageRepository.getPreviousPosition(position))
     }
 
     fun onNextButtonClick(view: View) {
-        updateCurrentImage(ImageRepository.getNextPosition(currentImage!!))
+        val position = Integer.parseInt(findViewById<ImageView>(R.id.imageView).tag.toString())
+        updateCurrentImage(ImageRepository.getNextPosition(position))
     }
 
     fun onHomeButtonClick(view: View) {
@@ -33,7 +35,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupGridLayout() {
         setContentView(R.layout.activity_main)
-        currentImage = null
 
         val gridview: GridView = findViewById(R.id.gridview)
 
@@ -47,10 +48,10 @@ class MainActivity : AppCompatActivity() {
         gridview.setOnScrollListener(GridOnScrollListener())
     }
 
-    private fun updateCurrentImage(imageId: Int?) {
-        currentImage = imageId
+    private fun updateCurrentImage(imagePosition: Int) {
         val imageView = findViewById<ImageView>(R.id.imageView)
-        imageView.setImageResource(adapter.getItemId(currentImage!!).toInt())
-        findViewById<TextView>(R.id.textView).text = currentImage.toString()
+        imageView.tag = imagePosition.toString()
+        imageView.setImageResource(ImageRepository.getImageId(imagePosition).toInt())
+        findViewById<TextView>(R.id.textView).text = imagePosition.toString()
     }
 }
