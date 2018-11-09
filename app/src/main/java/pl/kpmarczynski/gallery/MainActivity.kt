@@ -7,6 +7,8 @@ import android.widget.AdapterView
 import android.widget.GridView
 import android.widget.ImageView
 import android.widget.TextView
+import pl.kpmarczynski.gallery.ImageRepository.Companion.getNextPosition
+import pl.kpmarczynski.gallery.ImageRepository.Companion.getPreviousPosition
 
 
 class MainActivity : AppCompatActivity() {
@@ -19,19 +21,11 @@ class MainActivity : AppCompatActivity() {
         setupGridLayout()
     }
 
-    fun onPreviousButtonClick(view: View) {
-        val position = Integer.parseInt(findViewById<ImageView>(R.id.imageView).tag.toString())
-        updateCurrentImage(ImageRepository.getPreviousPosition(position))
-    }
+    fun onPreviousButtonClick(view: View) = updateCurrentImage(::getPreviousPosition)
 
-    fun onNextButtonClick(view: View) {
-        val position = Integer.parseInt(findViewById<ImageView>(R.id.imageView).tag.toString())
-        updateCurrentImage(ImageRepository.getNextPosition(position))
-    }
+    fun onNextButtonClick(view: View) = updateCurrentImage(::getNextPosition)
 
-    fun onHomeButtonClick(view: View) {
-        setupGridLayout()
-    }
+    fun onHomeButtonClick(view: View) = setupGridLayout()
 
     private fun setupGridLayout() {
         setContentView(R.layout.activity_main)
@@ -43,15 +37,23 @@ class MainActivity : AppCompatActivity() {
         gridview.onItemClickListener =
                 AdapterView.OnItemClickListener { parent, v, position, id ->
                     setContentView(R.layout.single_image_layout)
-                    updateCurrentImage(position)
+                    updateCurrentImage { position }
                 }
         gridview.setOnScrollListener(GridOnScrollListener())
     }
 
-    private fun updateCurrentImage(imagePosition: Int) {
+    private fun updateCurrentImage(getNewPosition: (Int) -> Int?) {
         val imageView = findViewById<ImageView>(R.id.imageView)
-        imageView.tag = imagePosition.toString()
-        imageView.setImageResource(ImageRepository.getImageId(imagePosition))
-        findViewById<TextView>(R.id.textView).text = imagePosition.toString()
+
+        val oldPosition = if (imageView.tag != null) Integer.parseInt(imageView.tag.toString()) else -1
+        val newPosition = getNewPosition(oldPosition)
+        imageView.tag = newPosition.toString()
+        if (newPosition != null) {
+            val imageId: Int? = ImageRepository.getImageId(newPosition)
+            if (imageId != null) {
+                imageView.setImageResource(imageId)
+            }
+        }
+        findViewById<TextView>(R.id.textView).text = newPosition.toString()
     }
 }

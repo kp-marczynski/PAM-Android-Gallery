@@ -19,7 +19,7 @@ class GridImageAdapter(private val mContext: Context) : BaseAdapter() {
 
     override fun getItem(position: Int): Any? = null
 
-    override fun getItemId(position: Int): Long = ImageRepository.getImageId(position).toLong()
+    override fun getItemId(position: Int): Long = ImageRepository.getImageId(position)?.toLong() ?: 0
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val imageView: ImageView
@@ -37,7 +37,7 @@ class GridImageAdapter(private val mContext: Context) : BaseAdapter() {
             imageView = convertView as ImageView
         }
 
-        imageView.setImageResource(ImageRepository.getImageId(position))
+        imageView.setImageResource(getItemId(position).toInt())
         return imageView
     }
 
