@@ -14,10 +14,12 @@ import pl.kpmarczynski.gallery.ImageRepository.Companion.getPreviousPosition
 class MainActivity : AppCompatActivity() {
 
     private var adapter: GridImageAdapter? = null
+    private var onScrollListener: GridOnScrollListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         adapter = GridImageAdapter(this)
+        onScrollListener = GridOnScrollListener()
         setupGridLayout()
     }
 
@@ -39,7 +41,7 @@ class MainActivity : AppCompatActivity() {
                     setContentView(R.layout.single_image_layout)
                     updateCurrentImage { position }
                 }
-        gridview.setOnScrollListener(GridOnScrollListener())
+        gridview.setOnScrollListener(onScrollListener)
     }
 
     private fun updateCurrentImage(getNewPosition: (Int) -> Int?) {
