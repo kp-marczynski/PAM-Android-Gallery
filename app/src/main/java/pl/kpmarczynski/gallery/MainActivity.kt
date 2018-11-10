@@ -5,8 +5,9 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.AdapterView
 import android.widget.GridView
-import android.widget.ImageView
 import android.widget.TextView
+import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.drawee.view.SimpleDraweeView
 import pl.kpmarczynski.gallery.ImageRepository.Companion.getNextPosition
 import pl.kpmarczynski.gallery.ImageRepository.Companion.getPreviousPosition
 
@@ -19,6 +20,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Fresco.initialize(this)
         updateViewWithState()
     }
 
@@ -59,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateCurrentImage(getNewPosition: (Int) -> Int?) {
-        val imageView = findViewById<ImageView>(R.id.imageView)
+        val imageView = findViewById<SimpleDraweeView>(R.id.imageView)
 
         val oldPosition = if (imageView.tag != null) Integer.parseInt(imageView.tag.toString()) else -1
         val newPosition = getNewPosition(oldPosition)
