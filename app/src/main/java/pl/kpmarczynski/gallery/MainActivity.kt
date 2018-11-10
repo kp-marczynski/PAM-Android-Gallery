@@ -13,14 +13,20 @@ import pl.kpmarczynski.gallery.ImageRepository.Companion.getPreviousPosition
 
 class MainActivity : AppCompatActivity() {
 
-    private var adapter: GridImageAdapter? = null
-    private var onScrollListener: GridOnScrollListener? = null
+    private var adapter: GridImageAdapter = GridImageAdapter(this)
+    private var onScrollListener: GridOnScrollListener = GridOnScrollListener()
+    private var state: State = State(Layout.GRID, 0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adapter = GridImageAdapter(this)
-        onScrollListener = GridOnScrollListener()
-        setupGridLayout()
+        updateViewWithState()
+    }
+
+    private fun updateViewWithState() {
+        when (state.currentView) {
+            Layout.GRID -> setupGridLayout()
+            Layout.DETAILS -> setupDetailsLayout()
+        }
     }
 
     fun onPreviousButtonClick(view: View) = updateCurrentImage(::getPreviousPosition)
@@ -30,18 +36,26 @@ class MainActivity : AppCompatActivity() {
     fun onHomeButtonClick(view: View) = setupGridLayout()
 
     private fun setupGridLayout() {
-        setContentView(R.layout.activity_main)
+        state.currentView = Layout.GRID
+        setContentView(Layout.GRID.value)
 
         val gridview: GridView = findViewById(R.id.gridview)
 
         gridview.adapter = adapter
 
         gridview.onItemClickListener =
-                AdapterView.OnItemClickListener { parent, v, position, id ->
-                    setContentView(R.layout.single_image_layout)
-                    updateCurrentImage { position }
+                AdapterView.OnItemClickListener { parent, view, position, id ->
+                    state.currentView = Layout.DETAILS
+                    state.currentImagePosition = position
+                    setupDetailsLayout()
                 }
         gridview.setOnScrollListener(onScrollListener)
+        gridview.setSelection(state.currentImagePosition)
+    }
+
+    private fun setupDetailsLayout() {
+        setContentView(Layout.DETAILS.value)
+        updateCurrentImage { state.currentImagePosition }
     }
 
     private fun updateCurrentImage(getNewPosition: (Int) -> Int?) {
@@ -57,5 +71,21 @@ class MainActivity : AppCompatActivity() {
             }
         }
         findViewById<TextView>(R.id.textView).text = newPosition.toString()
+        state.currentImagePosition = newPosition!!
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putInt("LAYOUT", state.currentView.value)
+        outState.putInt("POSITION", state.currentImagePosition)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        state.currentImagePosition = savedInstanceState.getInt("POSITION")
+        state.currentView = Layout.createFromInt(savedInstanceState.getInt("LAYOUT"))
+        updateViewWithState()
     }
 }
