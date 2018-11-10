@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         if (newPosition != null) {
             val imageId: Int? = ImageRepository.getImageId(newPosition)
             if (imageId != null) {
-                imageView.setImageResource(imageId)
+                imageView.setImageURI("res:/$imageId")
             }
         }
         findViewById<TextView>(R.id.textView).text = newPosition.toString()
