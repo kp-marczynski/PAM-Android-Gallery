@@ -4,17 +4,25 @@ class ImageRepository {
     companion object {
 
         private val repo = listOf<Int>(
-            R.drawable.sample_2, R.drawable.sample_3,
-            R.drawable.sample_4, R.drawable.sample_5,
-            R.drawable.sample_6, R.drawable.sample_7,
-            R.drawable.sample_0, R.drawable.sample_1,
-            R.drawable.sample_2, R.drawable.sample_3,
-            R.drawable.sample_4, R.drawable.sample_5,
-            R.drawable.sample_6, R.drawable.sample_7,
-            R.drawable.sample_0, R.drawable.sample_1,
-            R.drawable.sample_2, R.drawable.sample_3,
-            R.drawable.sample_4, R.drawable.sample_5,
-            R.drawable.sample_6, R.drawable.sample_7
+            R.drawable.emi1,
+            R.drawable.emi2,
+            R.drawable.emi3,
+            R.drawable.emi4,
+            R.drawable.emi5,
+            R.drawable.emi6,
+            R.drawable.emi7,
+            R.drawable.emi8,
+            R.drawable.emi9,
+            R.drawable.emi10,
+            R.drawable.emi11,
+            R.drawable.emi12,
+            R.drawable.emi13,
+            R.drawable.emi14,
+            R.drawable.emi15,
+            R.drawable.emi16,
+            R.drawable.emi17,
+            R.drawable.emi18,
+            R.drawable.emi19
         )
 
         fun getCount(): Int = repo.size

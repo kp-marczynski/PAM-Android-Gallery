@@ -33,6 +33,7 @@ class GridImageAdapter(private val mContext: Context) : BaseAdapter() {
             imageView.layoutParams = ViewGroup.LayoutParams(imageWidth, imageWidth)
 
             imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+            imageView.setPadding(8,8,8,8)
         } else {
             imageView = convertView as ImageView
         }
