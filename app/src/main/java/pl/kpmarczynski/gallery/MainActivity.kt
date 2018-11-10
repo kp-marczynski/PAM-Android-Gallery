@@ -63,9 +63,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateCurrentImage(getNewPosition: (Int) -> Int?) {
         val imageView = findViewById<SimpleDraweeView>(R.id.imageView)
 
-        val oldPosition = if (imageView.tag != null) Integer.parseInt(imageView.tag.toString()) else -1
-        val newPosition = getNewPosition(oldPosition)
-        imageView.tag = newPosition.toString()
+        val newPosition = getNewPosition(state.currentImagePosition)
         if (newPosition != null) {
             val imageId: Int? = ImageRepository.getImageId(newPosition)
             if (imageId != null) {
