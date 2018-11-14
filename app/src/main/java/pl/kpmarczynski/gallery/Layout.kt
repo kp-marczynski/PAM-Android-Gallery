@@ -12,6 +12,13 @@ enum class Layout(val value: Int, val viewName: String) {
                 else -> Layout.GRID
             }
         }
+
+        fun switchLayout(layout: Layout): Layout {
+            return when (layout) {
+                GRID -> DETAILS
+                DETAILS -> GRID
+            }
+        }
     }
 
 }
