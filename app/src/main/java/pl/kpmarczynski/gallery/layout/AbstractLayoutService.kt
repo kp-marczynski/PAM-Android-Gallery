@@ -3,7 +3,7 @@ package pl.kpmarczynski.gallery.layout
 import android.view.View
 import pl.kpmarczynski.gallery.MainActivity
 
-abstract class LayoutService(protected val activity: MainActivity, protected val layout: Layout) {
+abstract class AbstractLayoutService(protected val activity: MainActivity, protected val layout: Layout) {
     protected var position: Int = 0
 
     abstract fun setupLayout(position: Int)

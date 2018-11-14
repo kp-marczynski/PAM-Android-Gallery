@@ -6,10 +6,11 @@ import com.facebook.drawee.view.SimpleDraweeView
 import pl.kpmarczynski.gallery.ImageRepository
 import pl.kpmarczynski.gallery.MainActivity
 import pl.kpmarczynski.gallery.R
+import pl.kpmarczynski.gallery.layout.AbstractLayoutService
 import pl.kpmarczynski.gallery.layout.Layout
-import pl.kpmarczynski.gallery.layout.LayoutService
 
-class DetailsService(activity: MainActivity) : LayoutService(activity,
+class DetailsService(activity: MainActivity) : AbstractLayoutService(
+    activity,
     Layout.DETAILS
 ) {
 

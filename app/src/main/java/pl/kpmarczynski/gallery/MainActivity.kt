@@ -5,17 +5,17 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.facebook.drawee.backends.pipeline.Fresco
+import pl.kpmarczynski.gallery.layout.AbstractLayoutService
+import pl.kpmarczynski.gallery.layout.Layout
 import pl.kpmarczynski.gallery.layout.details.DetailsService
 import pl.kpmarczynski.gallery.layout.grid.GridService
-import pl.kpmarczynski.gallery.layout.Layout
-import pl.kpmarczynski.gallery.layout.LayoutService
 
 
 class MainActivity : AppCompatActivity() {
     //    private val state: State = State(Layout.GRID, 0)
-    private val detailsService: LayoutService =
+    private val detailsService: AbstractLayoutService =
         DetailsService(this)
-    private val gridService: LayoutService =
+    private val gridService: AbstractLayoutService =
         GridService(this)
     private var currentLayout: Layout = Layout.GRID
 
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
     fun onButtonClick(view: View) = getService(currentLayout).handleButtonClick(view)
 
-    private fun getService(layout: Layout): LayoutService {
+    private fun getService(layout: Layout): AbstractLayoutService {
         return when (layout) {
             Layout.GRID -> gridService
             Layout.DETAILS -> detailsService

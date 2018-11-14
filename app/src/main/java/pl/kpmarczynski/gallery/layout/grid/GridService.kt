@@ -8,10 +8,11 @@ import android.view.View
 import android.view.WindowManager
 import pl.kpmarczynski.gallery.MainActivity
 import pl.kpmarczynski.gallery.R
+import pl.kpmarczynski.gallery.layout.AbstractLayoutService
 import pl.kpmarczynski.gallery.layout.Layout
-import pl.kpmarczynski.gallery.layout.LayoutService
 
-class GridService(activity: MainActivity) : LayoutService(activity,
+class GridService(activity: MainActivity) : AbstractLayoutService(
+    activity,
     Layout.GRID
 ) {
     private var viewAdapter: RecyclerView.Adapter<*>? = null
