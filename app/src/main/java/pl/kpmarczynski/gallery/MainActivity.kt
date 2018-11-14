@@ -20,14 +20,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewManager: GridLayoutManager
-    private lateinit var onScrollListener: GridOnScrollListener
-    private var state: State = State(Layout.GRID, 0)
+    private val onScrollListener: GridOnScrollListener = GridOnScrollListener()
+    private val state: State = State(Layout.GRID, 0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val rownum = getRownum()
         viewAdapter = GridImageAdapter(this, rownum) { position: Int -> gridItemClicked(position) }
-        onScrollListener = GridOnScrollListener(rownum)
         Fresco.initialize(this)
         updateViewWithState()
     }

@@ -3,25 +3,21 @@ package pl.kpmarczynski.gallery
 import android.support.v7.widget.RecyclerView
 import android.widget.AbsListView
 
-class GridOnScrollListener(private val rownum: Int) : RecyclerView.OnScrollListener() {
+class GridOnScrollListener : RecyclerView.OnScrollListener() {
     override fun onScrollStateChanged(view: RecyclerView, scrollState: Int) {
         super.onScrollStateChanged(view, scrollState)
 
         if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-            val offset = Math.abs(view.getChildAt(0).top)
-            val height = view.getChildAt(0).height
+            val firstVisibleItem = view.getChildAt(0)
+            val offset = Math.abs(firstVisibleItem.top)
+            val height = firstVisibleItem.height
 
             val threshold = 2
             if (offset < (height / threshold)) {
-                scrollTo(view, 0)
+                view.smoothScrollBy(0, firstVisibleItem.top)
             } else if (offset > (height * (threshold - 1) / threshold)) {
-                scrollTo(view, rownum)
+                view.smoothScrollBy(0, firstVisibleItem.bottom)
             }
         }
-
-    }
-
-    private fun scrollTo(view: RecyclerView, position: Int) {
-        view.smoothScrollBy(0, view.getChildAt(position).top)
     }
 }
