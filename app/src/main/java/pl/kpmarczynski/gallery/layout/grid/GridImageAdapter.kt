@@ -6,7 +6,7 @@ import android.util.DisplayMetrics
 import android.view.ViewGroup
 import android.view.WindowManager
 import com.facebook.drawee.view.SimpleDraweeView
-import pl.kpmarczynski.gallery.ImageRepository
+import pl.kpmarczynski.gallery.repo.ImageRepository
 
 class GridImageAdapter(
     private val mContext: Context,

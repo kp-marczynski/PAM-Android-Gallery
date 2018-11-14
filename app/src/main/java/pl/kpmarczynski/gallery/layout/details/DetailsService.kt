@@ -3,11 +3,11 @@ package pl.kpmarczynski.gallery.layout.details
 import android.view.View
 import android.widget.TextView
 import com.facebook.drawee.view.SimpleDraweeView
-import pl.kpmarczynski.gallery.ImageRepository
 import pl.kpmarczynski.gallery.MainActivity
 import pl.kpmarczynski.gallery.R
 import pl.kpmarczynski.gallery.layout.AbstractLayoutService
 import pl.kpmarczynski.gallery.layout.Layout
+import pl.kpmarczynski.gallery.repo.ImageRepository
 
 class DetailsService(activity: MainActivity) : AbstractLayoutService(
     activity,
