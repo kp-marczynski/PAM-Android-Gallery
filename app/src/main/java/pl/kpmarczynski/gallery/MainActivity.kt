@@ -1,10 +1,13 @@
 package pl.kpmarczynski.gallery
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.view.Surface
 import android.view.View
-import android.widget.AdapterView
-import android.widget.GridView
+import android.view.WindowManager
 import android.widget.TextView
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.view.SimpleDraweeView
@@ -14,12 +17,17 @@ import pl.kpmarczynski.gallery.ImageRepository.Companion.getPreviousPosition
 
 class MainActivity : AppCompatActivity() {
 
-    private var adapter: GridImageAdapter = GridImageAdapter(this)
-    private var onScrollListener: GridOnScrollListener = GridOnScrollListener()
+    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var viewManager: GridLayoutManager
+    private lateinit var onScrollListener: GridOnScrollListener
     private var state: State = State(Layout.GRID, 0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val rownum = getRownum()
+        viewAdapter = GridImageAdapter(this, rownum) { position: Int -> gridItemClicked(position) }
+        onScrollListener = GridOnScrollListener(rownum)
         Fresco.initialize(this)
         updateViewWithState()
     }
@@ -37,22 +45,27 @@ class MainActivity : AppCompatActivity() {
 
     fun onHomeButtonClick(view: View) = setupGridLayout()
 
+    private fun getRownum(): Int {
+        val window: WindowManager = this.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        return if (window.defaultDisplay.rotation == Surface.ROTATION_0 || window.defaultDisplay.rotation == Surface.ROTATION_180) 2 else 4
+    }
+
+    private fun gridItemClicked(position: Int) {
+        state.currentView = Layout.DETAILS
+        state.currentImagePosition = position
+        setupDetailsLayout()
+    }
+
     private fun setupGridLayout() {
         state.currentView = Layout.GRID
         setContentView(Layout.GRID.value)
-
-        val gridview: GridView = findViewById(R.id.gridview)
-
-        gridview.adapter = adapter
-
-        gridview.onItemClickListener =
-                AdapterView.OnItemClickListener { parent, view, position, id ->
-                    state.currentView = Layout.DETAILS
-                    state.currentImagePosition = position
-                    setupDetailsLayout()
-                }
-        gridview.setOnScrollListener(onScrollListener)
-        gridview.setSelection(state.currentImagePosition)
+        viewManager = GridLayoutManager(this, getRownum())
+        recyclerView = findViewById<RecyclerView>(R.id.gridview).apply {
+            setHasFixedSize(true)
+            layoutManager = viewManager
+            adapter = viewAdapter
+        }
+        recyclerView.addOnScrollListener(onScrollListener)
     }
 
     private fun setupDetailsLayout() {

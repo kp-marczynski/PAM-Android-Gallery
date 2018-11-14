@@ -1,62 +1,49 @@
 package pl.kpmarczynski.gallery
 
 import android.content.Context
+import android.support.v7.widget.RecyclerView
 import android.util.DisplayMetrics
-import android.view.Surface
-import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.BaseAdapter
-import android.widget.GridView
 import com.facebook.drawee.view.SimpleDraweeView
 
-// references to our images
+class GridImageAdapter(
+    private val mContext: Context,
+    private val rownum: Int,
+    private val clickListener: (Int) -> Unit
+) : RecyclerView.Adapter<GridImageAdapter.PartViewHolder>() {
 
-
-class GridImageAdapter(private val mContext: Context) : BaseAdapter() {
-
-    override fun getCount(): Int = ImageRepository.getCount()
-
-    override fun getItem(position: Int): Any? = null
-
-    override fun getItemId(position: Int): Long = ImageRepository.getImageId(position)?.toLong() ?: 0
-
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): SimpleDraweeView {
-        val imageView: SimpleDraweeView
-        if (convertView == null) {
-            imageView = SimpleDraweeView(mContext)
-//            imageView
-
-            val rownum = getRownum()
-            val imageWidth: Int = getImageSize(rownum)
-
-            (parent as GridView).numColumns = rownum
-            imageView.layoutParams = ViewGroup.LayoutParams(imageWidth, imageWidth)
-
-//            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-//            imageView.setPadding(8,8,8,8)
-        } else {
-            imageView = convertView as SimpleDraweeView
+    class PartViewHolder(val imageView: SimpleDraweeView) : RecyclerView.ViewHolder(imageView) {
+        fun bind(position: Int, clickListener: (Int) -> Unit) {
+            itemView.setOnClickListener { clickListener(position) }
         }
+    }
 
-//        imageView.setImageResource(getItemId(position).toInt())
-//        imageView.hierarchy = GenericDraweeHierarchyBuilder.newInstance(get)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PartViewHolder {
+        val imageView = SimpleDraweeView(mContext)
+
+        val imageWidth: Int = getImageSize(rownum)
+
+        imageView.layoutParams = ViewGroup.LayoutParams(imageWidth, imageWidth)
+        imageView.setPadding(16, 16, 16, 16)
+
+        return PartViewHolder(imageView)
+    }
+
+    override fun onBindViewHolder(holder: PartViewHolder, position: Int) {
         val imageId = ImageRepository.getImageId(position)
-        if(imageId !=null){
-            imageView.setImageURI("res:/$imageId")
+        if (imageId != null) {
+            holder.imageView.setImageURI("res:/$imageId")
         }
-        return imageView
+        holder.bind(position, clickListener)
     }
 
-    private fun getRownum(): Int {
-        val window: WindowManager = mContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        return if (window.defaultDisplay.rotation == Surface.ROTATION_0 || window.defaultDisplay.rotation == Surface.ROTATION_180) 2 else 4
-    }
+    override fun getItemCount() = ImageRepository.getCount()
 
     private fun getImageSize(rownum: Int): Int {
         val window: WindowManager = mContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val displayMetrics = DisplayMetrics()
         window.defaultDisplay.getMetrics(displayMetrics)
-        return (displayMetrics.widthPixels / rownum * 0.9).toInt()
+        return displayMetrics.widthPixels / rownum
     }
 }
