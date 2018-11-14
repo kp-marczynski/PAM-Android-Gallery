@@ -3,7 +3,6 @@ package pl.kpmarczynski.gallery
 import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 import com.facebook.drawee.backends.pipeline.Fresco
 import pl.kpmarczynski.gallery.layout.AbstractLayoutService
 import pl.kpmarczynski.gallery.layout.Layout
@@ -33,8 +32,6 @@ class MainActivity : AppCompatActivity() {
         currentLayout = layout
         getService(layout).setupLayout(position)
     }
-
-    fun onButtonClick(view: View) = getService(currentLayout).handleButtonClick(view)
 
     private fun getService(layout: Layout): AbstractLayoutService {
         return when (layout) {

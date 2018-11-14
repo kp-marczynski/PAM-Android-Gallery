@@ -4,7 +4,6 @@ import android.content.Context
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Surface
-import android.view.View
 import android.view.WindowManager
 import pl.kpmarczynski.gallery.MainActivity
 import pl.kpmarczynski.gallery.R
@@ -41,8 +40,6 @@ class GridService(activity: MainActivity) : AbstractLayoutService(
         recyclerView.addOnScrollListener(onScrollListener)
         recyclerView.scrollToPosition(position)
     }
-
-    override fun handleButtonClick(view: View) = println("You've been mistaken. There is no buttons to click")
 
     override fun onBackPressed() = activity.finish()
 

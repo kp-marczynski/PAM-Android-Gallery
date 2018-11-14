@@ -1,6 +1,6 @@
 package pl.kpmarczynski.gallery.layout.details
 
-import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import com.facebook.drawee.view.SimpleDraweeView
 import pl.kpmarczynski.gallery.MainActivity
@@ -18,14 +18,12 @@ class DetailsService(activity: MainActivity) : AbstractLayoutService(
         activity.setContentView(layout.value)
         this.position = position
         updateCurrentImage { position }
-    }
 
-    override fun handleButtonClick(view: View) {
-        when (view.id) {
-            R.id.homeButton -> onHomeButtonClick(view)
-            R.id.nextButton -> onNextButtonClick(view)
-            R.id.previousButton -> onPreviousButtonClick(view)
-        }
+        activity.findViewById<Button>(R.id.homeButton).setOnClickListener { switchView() }
+        activity.findViewById<Button>(R.id.previousButton)
+            .setOnClickListener { updateCurrentImage(ImageRepository.Companion::getPreviousPosition) }
+        activity.findViewById<Button>(R.id.nextButton)
+            .setOnClickListener { updateCurrentImage(ImageRepository.Companion::getNextPosition) }
     }
 
     override fun onBackPressed() = switchView()
@@ -43,10 +41,4 @@ class DetailsService(activity: MainActivity) : AbstractLayoutService(
         activity.findViewById<TextView>(R.id.textView).text = newPosition.toString()
         this.position = newPosition!!
     }
-
-    private fun onPreviousButtonClick(view: View) = updateCurrentImage(ImageRepository.Companion::getPreviousPosition)
-
-    private fun onNextButtonClick(view: View) = updateCurrentImage(ImageRepository.Companion::getNextPosition)
-
-    private fun onHomeButtonClick(view: View) = switchView()
 }
