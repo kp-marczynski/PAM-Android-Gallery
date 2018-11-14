@@ -12,11 +12,8 @@ import pl.kpmarczynski.gallery.layout.grid.GridService
 
 
 class MainActivity : AppCompatActivity() {
-    //    private val state: State = State(Layout.GRID, 0)
-    private val detailsService: AbstractLayoutService =
-        DetailsService(this)
-    private val gridService: AbstractLayoutService =
-        GridService(this)
+    private val detailsService: AbstractLayoutService = DetailsService(this)
+    private val gridService: AbstractLayoutService = GridService(this)
     private var currentLayout: Layout = Layout.GRID
 
     override fun onCreate(savedInstanceState: Bundle?) {
