@@ -1,10 +1,17 @@
-package pl.kpmarczynski.gallery
+package pl.kpmarczynski.gallery.layout.details
 
 import android.view.View
 import android.widget.TextView
 import com.facebook.drawee.view.SimpleDraweeView
+import pl.kpmarczynski.gallery.ImageRepository
+import pl.kpmarczynski.gallery.MainActivity
+import pl.kpmarczynski.gallery.R
+import pl.kpmarczynski.gallery.layout.Layout
+import pl.kpmarczynski.gallery.layout.LayoutService
 
-class DetailsService(activity: MainActivity) : LayoutService(activity, Layout.DETAILS) {
+class DetailsService(activity: MainActivity) : LayoutService(activity,
+    Layout.DETAILS
+) {
 
     override fun setupLayout(position: Int) {
         activity.setContentView(layout.value)

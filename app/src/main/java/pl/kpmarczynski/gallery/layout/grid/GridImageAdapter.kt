@@ -1,4 +1,4 @@
-package pl.kpmarczynski.gallery
+package pl.kpmarczynski.gallery.layout.grid
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -6,6 +6,7 @@ import android.util.DisplayMetrics
 import android.view.ViewGroup
 import android.view.WindowManager
 import com.facebook.drawee.view.SimpleDraweeView
+import pl.kpmarczynski.gallery.ImageRepository
 
 class GridImageAdapter(
     private val mContext: Context,

@@ -1,4 +1,4 @@
-package pl.kpmarczynski.gallery
+package pl.kpmarczynski.gallery.layout.grid
 
 import android.support.v7.widget.RecyclerView
 import android.widget.AbsListView

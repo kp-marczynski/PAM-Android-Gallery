@@ -1,4 +1,6 @@
-package pl.kpmarczynski.gallery
+package pl.kpmarczynski.gallery.layout
+
+import pl.kpmarczynski.gallery.R
 
 enum class Layout(val value: Int, val viewName: String) {
     GRID(R.layout.grid_layout, "grid"),
@@ -7,9 +9,9 @@ enum class Layout(val value: Int, val viewName: String) {
     companion object {
         fun createFromInt(layoutId: Int): Layout {
             return when (layoutId) {
-                GRID.value -> Layout.GRID
-                DETAILS.value -> Layout.DETAILS
-                else -> Layout.GRID
+                GRID.value -> GRID
+                DETAILS.value -> DETAILS
+                else -> GRID
             }
         }
 

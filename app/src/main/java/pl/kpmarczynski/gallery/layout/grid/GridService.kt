@@ -1,4 +1,4 @@
-package pl.kpmarczynski.gallery
+package pl.kpmarczynski.gallery.layout.grid
 
 import android.content.Context
 import android.support.v7.widget.GridLayoutManager
@@ -6,19 +6,29 @@ import android.support.v7.widget.RecyclerView
 import android.view.Surface
 import android.view.View
 import android.view.WindowManager
+import pl.kpmarczynski.gallery.MainActivity
+import pl.kpmarczynski.gallery.R
+import pl.kpmarczynski.gallery.layout.Layout
+import pl.kpmarczynski.gallery.layout.LayoutService
 
-class GridService(activity: MainActivity) : LayoutService(activity, Layout.GRID) {
+class GridService(activity: MainActivity) : LayoutService(activity,
+    Layout.GRID
+) {
     private var viewAdapter: RecyclerView.Adapter<*>? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewManager: GridLayoutManager
-    private val onScrollListener: GridOnScrollListener = GridOnScrollListener()
+    private val onScrollListener: GridOnScrollListener =
+        GridOnScrollListener()
     private var rotation = Surface.ROTATION_0
 
     override fun setupLayout(position: Int) {
         val newRotation = getRotation()
         if (viewAdapter == null || newRotation != rotation) {
             rotation = newRotation
-            viewAdapter = GridImageAdapter(activity, getRownum()) { pos: Int -> gridItemClicked(pos) }
+            viewAdapter = GridImageAdapter(
+                activity,
+                getRownum()
+            ) { pos: Int -> gridItemClicked(pos) }
         }
         activity.setContentView(layout.value)
         viewManager = GridLayoutManager(activity, getRownum())
