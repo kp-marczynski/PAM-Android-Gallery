@@ -12,7 +12,7 @@ class GridOnScrollListener : RecyclerView.OnScrollListener() {
             val offset = Math.abs(firstVisibleItem.top)
             val height = firstVisibleItem.height
 
-            val threshold = 2
+            val threshold = 2.5
             if (offset < (height / threshold)) {
                 view.smoothScrollBy(0, firstVisibleItem.top)
             } else if (offset > (height * (threshold - 1) / threshold)) {
