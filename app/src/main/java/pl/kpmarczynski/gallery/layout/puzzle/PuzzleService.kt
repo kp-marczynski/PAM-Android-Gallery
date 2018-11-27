@@ -1,10 +1,7 @@
 package pl.kpmarczynski.gallery.layout.puzzle
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.DisplayMetrics
-import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import pl.kpmarczynski.gallery.MainActivity
@@ -16,10 +13,8 @@ import java.lang.Math.abs
 import java.util.*
 
 
-
-
 class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, Layout.PUZZLE) {
-     lateinit var pieces: ArrayList<PuzzlePiece>
+    lateinit var pieces: ArrayList<PuzzlePiece>
 
     private var imageTopPosition: Int = 8
     private var imageLeftPosition: Int = 8
@@ -31,32 +26,33 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
         activity.setContentView(layout.value)
         val layout: RelativeLayout = activity.findViewById(R.id.layout)
 
-        val srcBitmap = BitmapFactory.decodeResource(activity.resources, ImageRepository.getImageId(position)!!)
-        val scale = getScale(srcBitmap.width, srcBitmap.height)
-        val puzzleImage =
-            Bitmap.createScaledBitmap(
-                srcBitmap,
-                (srcBitmap.width * scale).toInt(),
-                (srcBitmap.height * scale).toInt(),
-                true
-            )
+        layout.post {
+            val srcBitmap = BitmapFactory.decodeResource(activity.resources, ImageRepository.getImageId(position)!!)
+            val scale = getScale(srcBitmap.width, srcBitmap.height, layout.width, layout.height)
+            val puzzleImage =
+                Bitmap.createScaledBitmap(
+                    srcBitmap,
+                    (srcBitmap.width * scale).toInt(),
+                    (srcBitmap.height * scale).toInt(),
+                    true
+                )
 
-        val imageView = ImageView(activity.applicationContext)
-        imageView.setImageBitmap(puzzleImage)
-        imageView.alpha = 0.5.toFloat()
-        layout.addView(imageView)
+            val imageView = ImageView(activity.applicationContext)
+            imageView.setImageBitmap(puzzleImage)
+            imageView.alpha = 0.5.toFloat()
+            layout.addView(imageView)
 
-        pieces = splitImage(puzzleImage)
-        val touchListener = TouchListener(this)
-        for (piece in pieces) {
-            piece.setOnTouchListener(touchListener)
-            layout.addView(piece)
+            pieces = splitImage(puzzleImage)
+            val touchListener = TouchListener(this)
+            for (piece in pieces) {
+                piece.setOnTouchListener(touchListener)
+                layout.addView(piece)
 
-            val displayMetrics = getDisplayMetrics()
-            val lParams = piece.layoutParams as RelativeLayout.LayoutParams
-            lParams.leftMargin = Random().nextInt(displayMetrics.widthPixels - piece.pieceWidth)
-            lParams.topMargin = displayMetrics.heightPixels - piece.pieceHeight
-            piece.layoutParams = lParams
+                val lParams = piece.layoutParams as RelativeLayout.LayoutParams
+                lParams.leftMargin = Random().nextInt(layout.width - piece.pieceWidth)
+                lParams.topMargin = layout.height - piece.pieceHeight
+                piece.layoutParams = lParams
+            }
         }
     }
 
@@ -88,22 +84,14 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
         return pieces
     }
 
-    private fun getScale(bitmapWidth: Int, bitmapHeight: Int): Double {
-        val displayMetrics = getDisplayMetrics()
+    private fun getScale(bitmapWidth: Int, bitmapHeight: Int, layoutWidth: Int, layoutHeight: Int): Double {
 
-        val maxHeight: Int = displayMetrics.heightPixels - this.imageTopPosition * 2
-        val maxWidth: Int = displayMetrics.widthPixels - this.imageLeftPosition * 2
+        val maxHeight: Int = layoutHeight - this.imageTopPosition * 2
+        val maxWidth: Int = layoutWidth - this.imageLeftPosition * 2
 
         val widthScale: Double = maxWidth / bitmapWidth.toDouble()
         val heightScale: Double = maxHeight / bitmapHeight.toDouble()
 
         return if (widthScale < heightScale) widthScale else heightScale
-    }
-
-    private fun getDisplayMetrics(): DisplayMetrics {
-        val window: WindowManager = activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val displayMetrics = DisplayMetrics()
-        window.defaultDisplay.getMetrics(displayMetrics)
-        return displayMetrics
     }
 }
