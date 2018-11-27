@@ -22,6 +22,10 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
     private var imageTopPosition: Int = 0
     private var imageLeftPosition: Int = 0
     private val padding: Int = 48
+    var drawerWidth = 0
+    var drawerHeight = 0
+    var drawerTop = 0
+    var drawerLeft = 0
 //    private var imageWidth: Int = 0
 //    private var imageHeight: Int = 0
 
@@ -46,33 +50,68 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
             imageView.alpha = 0.5.toFloat()
             layout.addView(imageView)
 
-            if(isPortrait()){
+            if (isPortrait()) {
                 this.imageLeftPosition = (layout.width - puzzleImage.width) / 2
                 this.imageTopPosition = this.padding
-            }
-            else{
+
+                drawerWidth = layout.width - 2 * padding
+                drawerHeight = layout.height - puzzleImage.height - 3 * padding
+            } else {
                 this.imageTopPosition = (layout.height - puzzleImage.height) / 2
                 this.imageLeftPosition = this.padding
+
+                drawerWidth = layout.width - puzzleImage.width - 3 * padding
+                drawerHeight = layout.height - 2 * padding
             }
 
-            val lParams = imageView.layoutParams as RelativeLayout.LayoutParams
-            lParams.leftMargin = this.imageLeftPosition
-            lParams.topMargin = this.imageTopPosition
+            val puzzleImageParams = imageView.layoutParams as RelativeLayout.LayoutParams
+            puzzleImageParams.leftMargin = this.imageLeftPosition
+            puzzleImageParams.topMargin = this.imageTopPosition
 
-            imageView.layoutParams = lParams
+            imageView.layoutParams = puzzleImageParams
+
+            val drawerImage = Bitmap.createBitmap(drawerWidth, drawerHeight, Bitmap.Config.ARGB_8888)
+            drawerImage.eraseColor(android.graphics.Color.LTGRAY)
+            val solidImage = ImageView(activity)
+            solidImage.setImageBitmap(drawerImage)
+            layout.addView(solidImage)
+
+            drawerLeft = if (isPortrait()) padding else puzzleImage.width + 2 * padding
+            drawerTop = if (isPortrait()) puzzleImage.height + 2 * padding else padding
+            val drawerParams = solidImage.layoutParams as RelativeLayout.LayoutParams
+            drawerParams.leftMargin = drawerLeft
+            drawerParams.topMargin = drawerTop
+
+            solidImage.layoutParams = drawerParams
 
             pieces = splitImage(puzzleImage)
             val touchListener = TouchListener(this)
             for (piece in pieces) {
                 piece.setOnTouchListener(touchListener)
                 layout.addView(piece)
-
-                val lParams = piece.layoutParams as RelativeLayout.LayoutParams
-                lParams.leftMargin = Random().nextInt(layout.width - piece.pieceWidth)
-                lParams.topMargin = layout.height - piece.pieceHeight
-                piece.layoutParams = lParams
+                putPieceInDrawer(piece)
             }
         }
+    }
+
+    fun putPieceInDrawer(piece: PuzzlePiece) {
+        val x = Random().nextInt(drawerWidth - piece.pieceWidth) + drawerLeft
+        val y = Random().nextInt(drawerHeight - piece.pieceHeight) + drawerTop
+
+//        val animX = ObjectAnimator.ofFloat(piece, "x", x.toFloat())
+//        val animY = ObjectAnimator.ofFloat(piece, "y", y.toFloat())
+//        val animSetXY = AnimatorSet()
+//        animSetXY.playTogether(animX, animY)
+////        animSetXY.startDelay = 100
+//        animSetXY.addListener(AnimatorListener(piece, x,y))
+//        animSetXY.start()
+////        animSetXY.setupEndValues()
+        val lParams = piece.layoutParams as RelativeLayout.LayoutParams
+        lParams.leftMargin = x
+        lParams.topMargin = y
+        piece.layoutParams = lParams
+
+
     }
 
     override fun onBackPressed() = switchView(Layout.GRID)
@@ -115,9 +154,9 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
         var maxWidth: Int = layoutWidth - padding * 2
 
         if (isPortrait()) {
-            maxHeight = (maxHeight * 0.66).toInt()
+            maxHeight = (maxHeight * 0.5).toInt()
         } else {
-            maxWidth = (maxWidth * 0.66).toInt()
+            maxWidth = (maxWidth * 0.5).toInt()
         }
 
         val widthScale: Double = maxWidth / bitmapWidth.toDouble()

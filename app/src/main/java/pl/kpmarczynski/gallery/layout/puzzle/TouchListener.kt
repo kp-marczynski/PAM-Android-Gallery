@@ -15,7 +15,7 @@ class TouchListener(val puzzleService: PuzzleService) : View.OnTouchListener {
     override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
         val x = motionEvent.rawX
         val y = motionEvent.rawY
-        val tolerance = sqrt(pow(view.width.toDouble(), 2.0) + pow(view.height.toDouble(), 2.0)) / 10
+        val tolerance = sqrt(pow(view.width.toDouble(), 2.0) + pow(view.height.toDouble(), 2.0)) / 5
 
         val piece = view as PuzzlePiece
         if (!piece.canMove) {
@@ -46,6 +46,9 @@ class TouchListener(val puzzleService: PuzzleService) : View.OnTouchListener {
                     if(isGameOver()){
                         puzzleService.switchView(Layout.GRID)
                     }
+                }
+                else{
+                    puzzleService.putPieceInDrawer(piece)
                 }
             }
         }
