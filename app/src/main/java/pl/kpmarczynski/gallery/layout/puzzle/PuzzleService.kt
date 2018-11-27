@@ -1,7 +1,10 @@
 package pl.kpmarczynski.gallery.layout.puzzle
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.view.Surface
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import pl.kpmarczynski.gallery.MainActivity
@@ -16,8 +19,9 @@ import java.util.*
 class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, Layout.PUZZLE) {
     lateinit var pieces: ArrayList<PuzzlePiece>
 
-    private var imageTopPosition: Int = 8
-    private var imageLeftPosition: Int = 8
+    private var imageTopPosition: Int = 0
+    private var imageLeftPosition: Int = 0
+    private val padding: Int = 48
 //    private var imageWidth: Int = 0
 //    private var imageHeight: Int = 0
 
@@ -41,6 +45,21 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
             imageView.setImageBitmap(puzzleImage)
             imageView.alpha = 0.5.toFloat()
             layout.addView(imageView)
+
+            if(isPortrait()){
+                this.imageLeftPosition = (layout.width - puzzleImage.width) / 2
+                this.imageTopPosition = this.padding
+            }
+            else{
+                this.imageTopPosition = (layout.height - puzzleImage.height) / 2
+                this.imageLeftPosition = this.padding
+            }
+
+            val lParams = imageView.layoutParams as RelativeLayout.LayoutParams
+            lParams.leftMargin = this.imageLeftPosition
+            lParams.topMargin = this.imageTopPosition
+
+            imageView.layoutParams = lParams
 
             pieces = splitImage(puzzleImage)
             val touchListener = TouchListener(this)
@@ -74,7 +93,14 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
             var x = 0
             for (col in 0 until cols) {
                 val pieceBitmap = Bitmap.createBitmap(puzzleImage, x, y, pieceWidth, pieceHeight)
-                val piece = PuzzlePiece(activity.applicationContext, pieceBitmap, x, y, pieceWidth, pieceHeight)
+                val piece = PuzzlePiece(
+                    activity.applicationContext,
+                    pieceBitmap,
+                    x + this.imageLeftPosition,
+                    y + this.imageTopPosition,
+                    pieceWidth,
+                    pieceHeight
+                )
                 pieces.add(piece)
                 x += pieceWidth
             }
@@ -85,13 +111,28 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
     }
 
     private fun getScale(bitmapWidth: Int, bitmapHeight: Int, layoutWidth: Int, layoutHeight: Int): Double {
+        var maxHeight: Int = layoutHeight - padding * 2
+        var maxWidth: Int = layoutWidth - padding * 2
 
-        val maxHeight: Int = layoutHeight - this.imageTopPosition * 2
-        val maxWidth: Int = layoutWidth - this.imageLeftPosition * 2
+        if (isPortrait()) {
+            maxHeight = (maxHeight * 0.66).toInt()
+        } else {
+            maxWidth = (maxWidth * 0.66).toInt()
+        }
 
         val widthScale: Double = maxWidth / bitmapWidth.toDouble()
         val heightScale: Double = maxHeight / bitmapHeight.toDouble()
 
         return if (widthScale < heightScale) widthScale else heightScale
+    }
+
+    private fun getRotation(): Int {
+        val window: WindowManager = activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        return window.defaultDisplay.rotation
+    }
+
+    private fun isPortrait(): Boolean {
+        val rotation = getRotation()
+        return rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180
     }
 }

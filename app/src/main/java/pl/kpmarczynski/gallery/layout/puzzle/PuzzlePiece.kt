@@ -21,4 +21,8 @@ class PuzzlePiece(context: Context) : AppCompatImageView(context) {
     var pieceHeight: Int = 0
     var canMove = true
 
+//    companion object {
+//        var imageTop: Int = 0
+//        var imageLeft: Int = 0
+//    }
 }
