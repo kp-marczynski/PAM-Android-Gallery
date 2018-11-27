@@ -27,8 +27,9 @@ class GridService(activity: MainActivity) : AbstractLayoutService(
             rotation = newRotation
             viewAdapter = GridImageAdapter(
                 activity,
-                getRownum()
-            ) { pos: Int -> gridItemClicked(pos) }
+                getRownum(),
+                { pos: Int -> gridItemClicked(pos) },
+                { pos: Int -> gridItemLongClicked(pos) })
         }
         activity.setContentView(layout.value)
         viewManager = GridLayoutManager(activity, getRownum())
@@ -45,7 +46,17 @@ class GridService(activity: MainActivity) : AbstractLayoutService(
 
     private fun gridItemClicked(position: Int) {
         this.position = position
-        switchView()
+        switchView(Layout.DETAILS)
+    }
+
+    private fun gridItemLongClicked(position: Int): Boolean {
+        this.position = position
+        switchView(Layout.PUZZLE)
+//        val intent: Intent = Intent(activity, PuzzleActivity::class.java).apply {
+//            putExtra("POSITION", position)
+//        }
+//        activity.startActivityForResult(intent, 1)
+        return true
     }
 
     private fun getRotation(): Int {

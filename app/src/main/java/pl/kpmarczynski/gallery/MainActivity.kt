@@ -3,21 +3,22 @@ package pl.kpmarczynski.gallery
 import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.facebook.drawee.backends.pipeline.Fresco
 import pl.kpmarczynski.gallery.layout.AbstractLayoutService
 import pl.kpmarczynski.gallery.layout.Layout
 import pl.kpmarczynski.gallery.layout.details.DetailsService
 import pl.kpmarczynski.gallery.layout.grid.GridService
+import pl.kpmarczynski.gallery.layout.puzzle.PuzzleService
 
 
 class MainActivity : AppCompatActivity() {
     private val detailsService: AbstractLayoutService = DetailsService(this)
     private val gridService: AbstractLayoutService = GridService(this)
+    private val puzzleService: AbstractLayoutService = PuzzleService(this)
     private var currentLayout: Layout = Layout.GRID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Fresco.initialize(this)
+//        Fresco.initialize(this)
         updateView(currentLayout, 0)
     }
 
@@ -37,6 +38,7 @@ class MainActivity : AppCompatActivity() {
         return when (layout) {
             Layout.GRID -> gridService
             Layout.DETAILS -> detailsService
+            Layout.PUZZLE -> puzzleService
         }
     }
 }
