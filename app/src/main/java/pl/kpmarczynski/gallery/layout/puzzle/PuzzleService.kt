@@ -20,9 +20,9 @@ import java.util.*
 
 class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, Layout.PUZZLE) {
 
-    override fun refreshLayout() = setupLayout(this.position)
+//    override fun refreshLayout() = setupLayout(this.position)
 
-    lateinit var pieces: ArrayList<PuzzlePiece>
+    var pieces: ArrayList<PuzzlePiece>? = null
 
     private var imageTopPosition: Int = 0
     private var imageLeftPosition: Int = 0
@@ -91,10 +91,17 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
 
             pieces = splitImage(puzzleImage)
             val touchListener = TouchListener(this)
-            for (piece in pieces) {
+            for (piece in pieces!!) {
                 piece.setOnTouchListener(touchListener)
                 layout.addView(piece)
-                putPieceInDrawer(piece)
+                if (piece.canMove) {
+                    putPieceInDrawer(piece)
+                } else {
+                    val pieceParams = piece.layoutParams as RelativeLayout.LayoutParams
+                    pieceParams.leftMargin = piece.xCoord
+                    pieceParams.topMargin = piece.yCoord
+                    piece.layoutParams = pieceParams
+                }
             }
         }
     }
@@ -116,13 +123,16 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
         piece.startAnimation(a)
     }
 
-    override fun onBackPressed() = switchView(Layout.GRID)
+    override fun onBackPressed() {
+        pieces = null
+        switchView(Layout.GRID)
+    }
 
     private fun splitImage(puzzleImage: Bitmap): ArrayList<PuzzlePiece> {
         val rows = 2
         val cols = 2
 
-        val pieces: ArrayList<PuzzlePiece> = ArrayList(rows * cols)
+        val localPieces: ArrayList<PuzzlePiece> = ArrayList(rows * cols)
 
         // Calculate the with and height of the pieces
         val pieceWidth = abs(puzzleImage.width / cols)
@@ -142,13 +152,18 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
                     pieceWidth,
                     pieceHeight
                 )
-                pieces.add(piece)
+                localPieces.add(piece)
                 x += pieceWidth
             }
             y += pieceHeight
         }
 
-        return pieces
+        if (this.pieces != null && localPieces.size == this.pieces!!.size) {
+            for (i in 0 until localPieces.size) {
+                localPieces[i].canMove = this.pieces!![i].canMove
+            }
+        }
+        return localPieces
     }
 
     private fun getScale(bitmapWidth: Int, bitmapHeight: Int, layoutWidth: Int, layoutHeight: Int): Double {

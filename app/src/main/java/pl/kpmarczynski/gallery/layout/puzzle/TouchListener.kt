@@ -43,11 +43,11 @@ class TouchListener(val puzzleService: PuzzleService) : View.OnTouchListener {
                     piece.layoutParams = lParams
                     piece.canMove = false
                     sendViewToBack(piece)
-                    if(isGameOver()){
+                    if (isGameOver()) {
+                        puzzleService.pieces = null
                         puzzleService.switchView(Layout.GRID)
                     }
-                }
-                else{
+                } else {
                     puzzleService.putPieceInDrawer(piece)
                 }
             }
@@ -57,12 +57,14 @@ class TouchListener(val puzzleService: PuzzleService) : View.OnTouchListener {
     }
 
     private fun isGameOver(): Boolean {
-        for (piece in puzzleService.pieces) {
-            if (piece.canMove) {
-                return false
+        if (puzzleService.pieces != null) {
+            for (piece in puzzleService.pieces!!) {
+                if (piece.canMove) {
+                    return false
+                }
             }
-        }
-        return true
+            return true
+        } else return false
     }
 
     fun sendViewToBack(child: View) {
