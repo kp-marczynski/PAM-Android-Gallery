@@ -13,10 +13,13 @@ import pl.kpmarczynski.gallery.layout.AbstractLayoutService
 import pl.kpmarczynski.gallery.layout.Layout
 import pl.kpmarczynski.gallery.repo.ImageRepository
 import java.lang.Math.abs
+import java.util.*
+
+
 
 
 class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, Layout.PUZZLE) {
-    private lateinit var pieces: ArrayList<Bitmap>
+     lateinit var pieces: ArrayList<PuzzlePiece>
 
     private var imageTopPosition: Int = 8
     private var imageLeftPosition: Int = 8
@@ -44,23 +47,26 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
         layout.addView(imageView)
 
         pieces = splitImage(puzzleImage)
-        val touchListener = TouchListener()
+        val touchListener = TouchListener(this)
         for (piece in pieces) {
-            val iv = ImageView(activity.applicationContext)
-            iv.setImageBitmap(piece)
-            iv.setOnTouchListener(touchListener)
-            layout.addView(iv)
+            piece.setOnTouchListener(touchListener)
+            layout.addView(piece)
+
+            val displayMetrics = getDisplayMetrics()
+            val lParams = piece.layoutParams as RelativeLayout.LayoutParams
+            lParams.leftMargin = Random().nextInt(displayMetrics.widthPixels - piece.pieceWidth)
+            lParams.topMargin = displayMetrics.heightPixels - piece.pieceHeight
+            piece.layoutParams = lParams
         }
     }
 
     override fun onBackPressed() = switchView(Layout.GRID)
 
-    private fun splitImage(puzzleImage: Bitmap): ArrayList<Bitmap> {
-        val piecesNumber = 4
+    private fun splitImage(puzzleImage: Bitmap): ArrayList<PuzzlePiece> {
         val rows = 2
         val cols = 2
 
-        val pieces: ArrayList<Bitmap> = ArrayList(piecesNumber)
+        val pieces: ArrayList<PuzzlePiece> = ArrayList(rows * cols)
 
         // Calculate the with and height of the pieces
         val pieceWidth = abs(puzzleImage.width / cols)
@@ -71,7 +77,9 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
         for (row in 0 until rows) {
             var x = 0
             for (col in 0 until cols) {
-                pieces.add(Bitmap.createBitmap(puzzleImage, x, y, pieceWidth, pieceHeight))
+                val pieceBitmap = Bitmap.createBitmap(puzzleImage, x, y, pieceWidth, pieceHeight)
+                val piece = PuzzlePiece(activity.applicationContext, pieceBitmap, x, y, pieceWidth, pieceHeight)
+                pieces.add(piece)
                 x += pieceWidth
             }
             y += pieceHeight
@@ -81,9 +89,7 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
     }
 
     private fun getScale(bitmapWidth: Int, bitmapHeight: Int): Double {
-        val window: WindowManager = activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val displayMetrics = DisplayMetrics()
-        window.defaultDisplay.getMetrics(displayMetrics)
+        val displayMetrics = getDisplayMetrics()
 
         val maxHeight: Int = displayMetrics.heightPixels - this.imageTopPosition * 2
         val maxWidth: Int = displayMetrics.widthPixels - this.imageLeftPosition * 2
@@ -92,5 +98,12 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
         val heightScale: Double = maxHeight / bitmapHeight.toDouble()
 
         return if (widthScale < heightScale) widthScale else heightScale
+    }
+
+    private fun getDisplayMetrics(): DisplayMetrics {
+        val window: WindowManager = activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val displayMetrics = DisplayMetrics()
+        window.defaultDisplay.getMetrics(displayMetrics)
+        return displayMetrics
     }
 }

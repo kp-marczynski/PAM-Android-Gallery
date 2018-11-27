@@ -10,6 +10,6 @@ abstract class AbstractLayoutService(protected val activity: MainActivity, prote
 
     fun refreshLayout() = setupLayout(this.position)
 
-    protected fun switchView(target: Layout) = activity.updateView(target, position)
+    fun switchView(target: Layout) = activity.updateView(target, position)
 
 }
