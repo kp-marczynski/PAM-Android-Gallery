@@ -1,122 +1,96 @@
 package pl.kpmarczynski.gallery.layout.puzzle
 
+import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Matrix
-import android.graphics.drawable.BitmapDrawable
-import android.support.constraint.ConstraintLayout
+import android.graphics.BitmapFactory
+import android.util.DisplayMetrics
+import android.view.WindowManager
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import pl.kpmarczynski.gallery.MainActivity
 import pl.kpmarczynski.gallery.R
 import pl.kpmarczynski.gallery.layout.AbstractLayoutService
 import pl.kpmarczynski.gallery.layout.Layout
+import pl.kpmarczynski.gallery.repo.ImageRepository
 import java.lang.Math.abs
 
 
 class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, Layout.PUZZLE) {
     private lateinit var pieces: ArrayList<Bitmap>
 
+    private var imageTopPosition: Int = 8
+    private var imageLeftPosition: Int = 8
+//    private var imageWidth: Int = 0
+//    private var imageHeight: Int = 0
+
     override fun setupLayout(position: Int) {
+        this.position = position
         activity.setContentView(layout.value)
-        val layout: ConstraintLayout = activity.findViewById(R.id.layout)
-        val imageView: ImageView = activity.findViewById(R.id.imageView)
-        imageView.post {
-            pieces = splitImage()
-            for (piece in pieces) {
-                val iv = ImageView(activity.applicationContext)
-                iv.setImageBitmap(piece)
-                layout.addView(iv)
-            }
+        val layout: RelativeLayout = activity.findViewById(R.id.layout)
+
+        val srcBitmap = BitmapFactory.decodeResource(activity.resources, ImageRepository.getImageId(position)!!)
+        val scale = getScale(srcBitmap.width, srcBitmap.height)
+        val puzzleImage =
+            Bitmap.createScaledBitmap(
+                srcBitmap,
+                (srcBitmap.width * scale).toInt(),
+                (srcBitmap.height * scale).toInt(),
+                true
+            )
+
+        val imageView = ImageView(activity.applicationContext)
+        imageView.setImageBitmap(puzzleImage)
+        imageView.alpha = 0.5.toFloat()
+        layout.addView(imageView)
+
+        pieces = splitImage(puzzleImage)
+        val touchListener = TouchListener()
+        for (piece in pieces) {
+            val iv = ImageView(activity.applicationContext)
+            iv.setImageBitmap(piece)
+            iv.setOnTouchListener(touchListener)
+            layout.addView(iv)
         }
     }
 
     override fun onBackPressed() = switchView(Layout.GRID)
 
-    private fun splitImage(): ArrayList<Bitmap> {
-        val piecesNumber = 12
-        val rows = 4
-        val cols = 3
+    private fun splitImage(puzzleImage: Bitmap): ArrayList<Bitmap> {
+        val piecesNumber = 4
+        val rows = 2
+        val cols = 2
 
-        val imageView: ImageView = activity.findViewById(R.id.imageView)
         val pieces: ArrayList<Bitmap> = ArrayList(piecesNumber)
 
-        // Get the bitmap of the source image
-        val drawable = imageView.drawable as BitmapDrawable
-        val bitmap = drawable.bitmap
-
-        val dimensions = getBitmapPositionInsideImageView(imageView)
-        val scaledBitmapLeft = dimensions[0]
-        val scaledBitmapTop = dimensions[1]
-        val scaledBitmapWidth = dimensions[2]
-        val scaledBitmapHeight = dimensions[3]
-
-        val croppedImageWidth = scaledBitmapWidth - 2 * abs(scaledBitmapLeft)
-        val croppedImageHeight = scaledBitmapHeight - 2 * abs(scaledBitmapTop)
-
-        val scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaledBitmapWidth, scaledBitmapHeight, true)
-        val croppedBitmap = Bitmap.createBitmap(
-            scaledBitmap,
-            abs(scaledBitmapLeft),
-            abs(scaledBitmapTop),
-            croppedImageWidth,
-            croppedImageHeight
-        )
-
         // Calculate the with and height of the pieces
-        val pieceWidth = croppedImageWidth / cols
-        val pieceHeight = croppedImageHeight / rows
+        val pieceWidth = abs(puzzleImage.width / cols)
+        val pieceHeight = abs(puzzleImage.height / rows)
 
         // Create each bitmap piece and add it to the resulting array
-        var yCoord = 0
+        var y = 0
         for (row in 0 until rows) {
-            var xCoord = 0
+            var x = 0
             for (col in 0 until cols) {
-                pieces.add(Bitmap.createBitmap(bitmap, xCoord, yCoord, pieceWidth, pieceHeight))
-                xCoord += pieceWidth
+                pieces.add(Bitmap.createBitmap(puzzleImage, x, y, pieceWidth, pieceHeight))
+                x += pieceWidth
             }
-            yCoord += pieceHeight
+            y += pieceHeight
         }
 
         return pieces
     }
 
-    private fun getBitmapPositionInsideImageView(imageView: ImageView?): IntArray {
-        val ret = IntArray(4)
+    private fun getScale(bitmapWidth: Int, bitmapHeight: Int): Double {
+        val window: WindowManager = activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val displayMetrics = DisplayMetrics()
+        window.defaultDisplay.getMetrics(displayMetrics)
 
-        if (imageView == null || imageView.drawable == null)
-            return ret
+        val maxHeight: Int = displayMetrics.heightPixels - this.imageTopPosition * 2
+        val maxWidth: Int = displayMetrics.widthPixels - this.imageLeftPosition * 2
 
-        // Get image dimensions
-        // Get image matrix values and place them in an array
-        val f = FloatArray(9)
-        imageView.imageMatrix.getValues(f)
+        val widthScale: Double = maxWidth / bitmapWidth.toDouble()
+        val heightScale: Double = maxHeight / bitmapHeight.toDouble()
 
-        // Extract the scale values using the constants (if aspect ratio maintained, scaleX == scaleY)
-        val scaleX = f[Matrix.MSCALE_X]
-        val scaleY = f[Matrix.MSCALE_Y]
-
-        // Get the drawable (could also get the bitmap behind the drawable and getWidth/getHeight)
-        val d = imageView.drawable
-        val origW = d.intrinsicWidth
-        val origH = d.intrinsicHeight
-
-        // Calculate the actual dimensions
-        val actW = Math.round(origW * scaleX)
-        val actH = Math.round(origH * scaleY)
-
-        ret[2] = actW
-        ret[3] = actH
-
-        // Get image position
-        // We assume that the image is centered into ImageView
-        val imgViewW = imageView.width
-        val imgViewH = imageView.height
-
-        val top = (imgViewH - actH) / 2
-        val left = (imgViewW - actW) / 2
-
-        ret[0] = left
-        ret[1] = top
-
-        return ret
+        return if (widthScale < heightScale) widthScale else heightScale
     }
 }
