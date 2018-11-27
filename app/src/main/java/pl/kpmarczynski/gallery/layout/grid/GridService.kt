@@ -14,6 +14,8 @@ class GridService(activity: MainActivity) : AbstractLayoutService(
     activity,
     Layout.GRID
 ) {
+    override fun refreshLayout() = setupLayout(this.position)
+
     private var viewAdapter: RecyclerView.Adapter<*>? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewManager: GridLayoutManager

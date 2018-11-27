@@ -8,7 +8,7 @@ abstract class AbstractLayoutService(protected val activity: MainActivity, prote
     abstract fun setupLayout(position: Int)
     abstract fun onBackPressed()
 
-    fun refreshLayout() = setupLayout(this.position)
+    abstract fun refreshLayout()
 
     fun switchView(target: Layout) = activity.updateView(target, position)
 

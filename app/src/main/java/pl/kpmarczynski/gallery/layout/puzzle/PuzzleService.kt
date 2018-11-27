@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.view.Surface
 import android.view.WindowManager
+import android.view.animation.Animation
+import android.view.animation.Transformation
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import pl.kpmarczynski.gallery.MainActivity
@@ -17,6 +19,9 @@ import java.util.*
 
 
 class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, Layout.PUZZLE) {
+
+    override fun refreshLayout() = setupLayout(this.position)
+
     lateinit var pieces: ArrayList<PuzzlePiece>
 
     private var imageTopPosition: Int = 0
@@ -98,20 +103,17 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
         val x = Random().nextInt(drawerWidth - piece.pieceWidth) + drawerLeft
         val y = Random().nextInt(drawerHeight - piece.pieceHeight) + drawerTop
 
-//        val animX = ObjectAnimator.ofFloat(piece, "x", x.toFloat())
-//        val animY = ObjectAnimator.ofFloat(piece, "y", y.toFloat())
-//        val animSetXY = AnimatorSet()
-//        animSetXY.playTogether(animX, animY)
-////        animSetXY.startDelay = 100
-//        animSetXY.addListener(AnimatorListener(piece, x,y))
-//        animSetXY.start()
-////        animSetXY.setupEndValues()
-        val lParams = piece.layoutParams as RelativeLayout.LayoutParams
-        lParams.leftMargin = x
-        lParams.topMargin = y
-        piece.layoutParams = lParams
+        val a: Animation = object : Animation() {
+            override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
+                val params = piece.layoutParams as RelativeLayout.LayoutParams
 
-
+                params.leftMargin += ((x - params.leftMargin) * interpolatedTime).toInt()
+                params.topMargin += ((y - params.topMargin) * interpolatedTime).toInt()
+                piece.layoutParams = params
+            }
+        }
+        a.duration = 500
+        piece.startAnimation(a)
     }
 
     override fun onBackPressed() = switchView(Layout.GRID)

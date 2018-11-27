@@ -13,6 +13,7 @@ class DetailsService(activity: MainActivity) : AbstractLayoutService(
     activity,
     Layout.DETAILS
 ) {
+    override fun refreshLayout() = setupLayout(this.position)
 
     override fun setupLayout(position: Int) {
         activity.setContentView(layout.value)
