@@ -7,7 +7,14 @@ import android.support.v7.widget.AppCompatImageView
 
 class PuzzlePiece(context: Context) : AppCompatImageView(context) {
 
-    constructor(context: Context, imageBitmap: Bitmap,  xCord: Int, yCord: Int, pieceWidth: Int, pieceHeight: Int) : this(context) {
+    constructor(
+        context: Context,
+        imageBitmap: Bitmap,
+        xCord: Int,
+        yCord: Int,
+        pieceWidth: Int,
+        pieceHeight: Int
+    ) : this(context) {
         this.setImageBitmap(imageBitmap)
         this.xCoord = xCord
         this.yCoord = yCord
@@ -20,9 +27,4 @@ class PuzzlePiece(context: Context) : AppCompatImageView(context) {
     var pieceWidth: Int = 0
     var pieceHeight: Int = 0
     var canMove = true
-
-//    companion object {
-//        var imageTop: Int = 0
-//        var imageLeft: Int = 0
-//    }
 }

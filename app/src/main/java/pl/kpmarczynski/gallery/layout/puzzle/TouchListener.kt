@@ -52,8 +52,15 @@ class TouchListener(val puzzleService: PuzzleService) : View.OnTouchListener {
                 }
             }
         }
-
         return true
+    }
+
+    fun sendViewToBack(child: View) {
+        val parent = child.parent as ViewGroup?
+        if (null != parent) {
+            parent.removeView(child)
+            parent.addView(child, 0)
+        }
     }
 
     private fun isGameOver(): Boolean {
@@ -65,13 +72,5 @@ class TouchListener(val puzzleService: PuzzleService) : View.OnTouchListener {
             }
             return true
         } else return false
-    }
-
-    fun sendViewToBack(child: View) {
-        val parent = child.parent as ViewGroup?
-        if (null != parent) {
-            parent.removeView(child)
-            parent.addView(child, 0)
-        }
     }
 }

@@ -9,7 +9,6 @@ import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.ImageView
 import android.widget.RelativeLayout
-import pl.kpmarczynski.gallery.MainActivity
 import pl.kpmarczynski.gallery.R
 import pl.kpmarczynski.gallery.layout.AbstractLayoutService
 import pl.kpmarczynski.gallery.layout.Layout
@@ -18,92 +17,38 @@ import java.lang.Math.abs
 import java.util.*
 
 
-class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, Layout.PUZZLE) {
-
-//    override fun refreshLayout() = setupLayout(this.position)
+class PuzzleService : AbstractLayoutService(Layout.PUZZLE) {
 
     var pieces: ArrayList<PuzzlePiece>? = null
+
+    private val touchListener = TouchListener(this)
 
     private var imageTopPosition: Int = 0
     private var imageLeftPosition: Int = 0
     private val padding: Int = 48
-    var drawerWidth = 0
-    var drawerHeight = 0
-    var drawerTop = 0
-    var drawerLeft = 0
-//    private var imageWidth: Int = 0
-//    private var imageHeight: Int = 0
+    private var drawerWidth = 0
+    private var drawerHeight = 0
+    private var drawerTop = 0
+    private var drawerLeft = 0
+
 
     override fun setupLayout(position: Int) {
         this.position = position
-        activity.setContentView(layout.value)
-        val layout: RelativeLayout = activity.findViewById(R.id.layout)
+        val layout: RelativeLayout = activity!!.findViewById(R.id.layout)
 
         layout.post {
-            val srcBitmap = BitmapFactory.decodeResource(activity.resources, ImageRepository.getImageId(position)!!)
-            val scale = getScale(srcBitmap.width, srcBitmap.height, layout.width, layout.height)
-            val puzzleImage =
-                Bitmap.createScaledBitmap(
-                    srcBitmap,
-                    (srcBitmap.width * scale).toInt(),
-                    (srcBitmap.height * scale).toInt(),
-                    true
-                )
+            val puzzleBitmap = createScaledPuzzleBitmap(layout.width, layout.height)
+            putPuzzleBitmapInLayout(puzzleBitmap, layout)
 
-            val imageView = ImageView(activity.applicationContext)
-            imageView.setImageBitmap(puzzleImage)
-            imageView.alpha = 0.5.toFloat()
-            layout.addView(imageView)
+            createDrawer(puzzleBitmap.width, puzzleBitmap.height, layout)
 
-            if (isPortrait()) {
-                this.imageLeftPosition = (layout.width - puzzleImage.width) / 2
-                this.imageTopPosition = this.padding
-
-                drawerWidth = layout.width - 2 * padding
-                drawerHeight = layout.height - puzzleImage.height - 3 * padding
-            } else {
-                this.imageTopPosition = (layout.height - puzzleImage.height) / 2
-                this.imageLeftPosition = this.padding
-
-                drawerWidth = layout.width - puzzleImage.width - 3 * padding
-                drawerHeight = layout.height - 2 * padding
-            }
-
-            val puzzleImageParams = imageView.layoutParams as RelativeLayout.LayoutParams
-            puzzleImageParams.leftMargin = this.imageLeftPosition
-            puzzleImageParams.topMargin = this.imageTopPosition
-
-            imageView.layoutParams = puzzleImageParams
-
-            val drawerImage = Bitmap.createBitmap(drawerWidth, drawerHeight, Bitmap.Config.ARGB_8888)
-            drawerImage.eraseColor(android.graphics.Color.LTGRAY)
-            val solidImage = ImageView(activity)
-            solidImage.setImageBitmap(drawerImage)
-            layout.addView(solidImage)
-
-            drawerLeft = if (isPortrait()) padding else puzzleImage.width + 2 * padding
-            drawerTop = if (isPortrait()) puzzleImage.height + 2 * padding else padding
-            val drawerParams = solidImage.layoutParams as RelativeLayout.LayoutParams
-            drawerParams.leftMargin = drawerLeft
-            drawerParams.topMargin = drawerTop
-
-            solidImage.layoutParams = drawerParams
-
-            pieces = splitImage(puzzleImage)
-            val touchListener = TouchListener(this)
-            for (piece in pieces!!) {
-                piece.setOnTouchListener(touchListener)
-                layout.addView(piece)
-                if (piece.canMove) {
-                    putPieceInDrawer(piece)
-                } else {
-                    val pieceParams = piece.layoutParams as RelativeLayout.LayoutParams
-                    pieceParams.leftMargin = piece.xCoord
-                    pieceParams.topMargin = piece.yCoord
-                    piece.layoutParams = pieceParams
-                }
-            }
+            createPuzzlePieces(puzzleBitmap, layout)
         }
+    }
+
+    override fun onBackPressed() {
+        pieces = null
+        switchView(Layout.GRID)
     }
 
     fun putPieceInDrawer(piece: PuzzlePiece) {
@@ -123,9 +68,75 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
         piece.startAnimation(a)
     }
 
-    override fun onBackPressed() {
-        pieces = null
-        switchView(Layout.GRID)
+    private fun createPuzzlePieces(puzzleBitmap: Bitmap, layout: RelativeLayout) {
+        pieces = splitImage(puzzleBitmap)
+        for (piece in pieces!!) {
+            piece.setOnTouchListener(touchListener)
+            layout.addView(piece)
+            if (piece.canMove) {
+                putPieceInDrawer(piece)
+            } else {
+                val pieceParams = piece.layoutParams as RelativeLayout.LayoutParams
+                pieceParams.leftMargin = piece.xCoord
+                pieceParams.topMargin = piece.yCoord
+                piece.layoutParams = pieceParams
+            }
+        }
+    }
+
+    private fun createDrawer(puzzleBitmapWidth: Int, puzzleBitmapHeight: Int, layout: RelativeLayout) {
+        if (isPortrait()) {
+            drawerWidth = layout.width - 2 * padding
+            drawerHeight = layout.height - puzzleBitmapHeight - 3 * padding
+        } else {
+            drawerWidth = layout.width - puzzleBitmapWidth - 3 * padding
+            drawerHeight = layout.height - 2 * padding
+        }
+        val drawerImage = Bitmap.createBitmap(drawerWidth, drawerHeight, Bitmap.Config.ARGB_8888)
+        drawerImage.eraseColor(android.graphics.Color.LTGRAY)
+        val solidImage = ImageView(activity)
+        solidImage.setImageBitmap(drawerImage)
+        layout.addView(solidImage)
+
+        drawerLeft = if (isPortrait()) padding else puzzleBitmapWidth + 2 * padding
+        drawerTop = if (isPortrait()) puzzleBitmapHeight + 2 * padding else padding
+        val drawerParams = solidImage.layoutParams as RelativeLayout.LayoutParams
+        drawerParams.leftMargin = drawerLeft
+        drawerParams.topMargin = drawerTop
+
+        solidImage.layoutParams = drawerParams
+    }
+
+    private fun putPuzzleBitmapInLayout(puzzleBitmap: Bitmap, layout: RelativeLayout) {
+        val puzzleImageView = ImageView(activity!!.applicationContext)
+        puzzleImageView.setImageBitmap(puzzleBitmap)
+        puzzleImageView.alpha = 0.5.toFloat()
+        layout.addView(puzzleImageView)
+
+        if (isPortrait()) {
+            this.imageLeftPosition = (layout.width - puzzleBitmap.width) / 2
+            this.imageTopPosition = this.padding
+        } else {
+            this.imageTopPosition = (layout.height - puzzleBitmap.height) / 2
+            this.imageLeftPosition = this.padding
+        }
+
+        val puzzleImageParams = puzzleImageView.layoutParams as RelativeLayout.LayoutParams
+        puzzleImageParams.leftMargin = this.imageLeftPosition
+        puzzleImageParams.topMargin = this.imageTopPosition
+
+        puzzleImageView.layoutParams = puzzleImageParams
+    }
+
+    private fun createScaledPuzzleBitmap(maxWidth: Int, maxHeight: Int): Bitmap {
+        val srcBitmap = BitmapFactory.decodeResource(resources, ImageRepository.getImageId(position)!!)
+        val scale = getScale(srcBitmap.width, srcBitmap.height, maxWidth, maxHeight)
+        return Bitmap.createScaledBitmap(
+            srcBitmap,
+            (srcBitmap.width * scale).toInt(),
+            (srcBitmap.height * scale).toInt(),
+            true
+        )
     }
 
     private fun splitImage(puzzleImage: Bitmap): ArrayList<PuzzlePiece> {
@@ -145,7 +156,7 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
             for (col in 0 until cols) {
                 val pieceBitmap = Bitmap.createBitmap(puzzleImage, x, y, pieceWidth, pieceHeight)
                 val piece = PuzzlePiece(
-                    activity.applicationContext,
+                    activity!!.applicationContext,
                     pieceBitmap,
                     x + this.imageLeftPosition,
                     y + this.imageTopPosition,
@@ -183,7 +194,7 @@ class PuzzleService(activity: MainActivity) : AbstractLayoutService(activity, La
     }
 
     private fun getRotation(): Int {
-        val window: WindowManager = activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val window: WindowManager = activity!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         return window.defaultDisplay.rotation
     }
 
