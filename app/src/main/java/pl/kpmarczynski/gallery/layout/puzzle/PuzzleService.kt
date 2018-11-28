@@ -32,6 +32,8 @@ class PuzzleService : AbstractLayoutService(Layout.PUZZLE) {
     private var drawerTop = 0
     private var drawerLeft = 0
 
+    private val piecesOnLongerSide = 4
+    private val piecesOnShorterSide = 3
 
     override fun setupLayout(position: Int) {
         this.position = position
@@ -150,22 +152,29 @@ class PuzzleService : AbstractLayoutService(Layout.PUZZLE) {
         )
     }
 
-    private fun splitImage(puzzleImage: Bitmap): ArrayList<PuzzlePiece> {
-        val rows = 2
-        val cols = 2
+    private fun splitImage(puzzleBitmap: Bitmap): ArrayList<PuzzlePiece> {
+        val rows: Int
+        val cols: Int
+        if (puzzleBitmap.width > puzzleBitmap.height) {
+            rows = piecesOnShorterSide
+            cols = piecesOnLongerSide
+        } else {
+            rows = piecesOnLongerSide
+            cols = piecesOnShorterSide
+        }
 
         val localPieces: ArrayList<PuzzlePiece> = ArrayList(rows * cols)
 
         // Calculate the with and height of the pieces
-        val pieceWidth = abs(puzzleImage.width / cols)
-        val pieceHeight = abs(puzzleImage.height / rows)
+        val pieceWidth = abs(puzzleBitmap.width / cols)
+        val pieceHeight = abs(puzzleBitmap.height / rows)
 
         // Create each bitmap piece and add it to the resulting array
         var y = 0
         for (row in 0 until rows) {
             var x = 0
             for (col in 0 until cols) {
-                val pieceBitmap = Bitmap.createBitmap(puzzleImage, x, y, pieceWidth, pieceHeight)
+                val pieceBitmap = Bitmap.createBitmap(puzzleBitmap, x, y, pieceWidth, pieceHeight)
                 val piece = PuzzlePiece(
                     activity!!.applicationContext,
                     pieceBitmap,
