@@ -18,6 +18,15 @@ abstract class AbstractLayoutService(protected val layout: Layout) : Fragment() 
 
     fun switchView(target: Layout) = (activity as MainActivity).updateView(target, position)
 
+    open fun saveState(bundle: Bundle) {
+        bundle.putInt("LAYOUT", layout.value)
+        bundle.putInt("POSITION", position)
+    }
+
+    open fun restoreState(bundle: Bundle) {
+        position = bundle.getInt("POSITION")
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(layout.value, container, false)
     }
@@ -25,5 +34,9 @@ abstract class AbstractLayoutService(protected val layout: Layout) : Fragment() 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setupLayout(position)
+    }
+
+    companion object {
+        fun restoreLayout(bundle: Bundle): Layout = Layout.createFromInt(bundle.getInt("LAYOUT"))
     }
 }

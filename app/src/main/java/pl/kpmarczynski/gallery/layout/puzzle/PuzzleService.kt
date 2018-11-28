@@ -3,6 +3,7 @@ package pl.kpmarczynski.gallery.layout.puzzle
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Bundle
 import android.view.Surface
 import android.view.WindowManager
 import android.view.animation.Animation
@@ -66,6 +67,16 @@ class PuzzleService : AbstractLayoutService(Layout.PUZZLE) {
         }
         a.duration = 500
         piece.startAnimation(a)
+    }
+
+    override fun saveState(bundle: Bundle) {
+        super.saveState(bundle)
+        bundle.putSerializable("PIECES", pieces)
+    }
+
+    override fun restoreState(bundle: Bundle) {
+        super.restoreState(bundle)
+        pieces = bundle.getSerializable("PIECES") as ArrayList<PuzzlePiece>
     }
 
     private fun createPuzzlePieces(puzzleBitmap: Bitmap, layout: RelativeLayout) {

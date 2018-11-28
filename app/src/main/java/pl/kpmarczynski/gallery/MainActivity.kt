@@ -7,9 +7,7 @@ import pl.kpmarczynski.gallery.layout.AbstractLayoutService
 import pl.kpmarczynski.gallery.layout.Layout
 import pl.kpmarczynski.gallery.layout.details.DetailsService
 import pl.kpmarczynski.gallery.layout.grid.GridService
-import pl.kpmarczynski.gallery.layout.puzzle.PuzzlePiece
 import pl.kpmarczynski.gallery.layout.puzzle.PuzzleService
-import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -49,28 +47,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        outState.putInt("LAYOUT", currentLayout.value)
-        outState.putInt("POSITION", getService(currentLayout).position)
-        if (currentLayout == Layout.PUZZLE) {
-            val puzzles = getService(Layout.PUZZLE) as PuzzleService
-            outState.putSerializable("PIECES", puzzles.pieces)
-        }
+    override fun onSaveInstanceState(bundle: Bundle) {
+        super.onSaveInstanceState(bundle)
+        getService(currentLayout).saveState(bundle)
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
+    override fun onRestoreInstanceState(bundle: Bundle) {
+        super.onRestoreInstanceState(bundle)
 
-        val layout = Layout.createFromInt(savedInstanceState.getInt("LAYOUT"))
-        if (layout == Layout.PUZZLE) {
-            val puzzles = getService(Layout.PUZZLE) as PuzzleService
-            puzzles.pieces = savedInstanceState.getSerializable("PIECES") as ArrayList<PuzzlePiece>
-        }
-        updateView(
-            layout,
-            savedInstanceState.getInt("POSITION")
-        )
+        val layout = AbstractLayoutService.restoreLayout(bundle)
+        getService(layout).restoreState(bundle)
+        updateView(layout, getService(layout).position)
     }
 }
