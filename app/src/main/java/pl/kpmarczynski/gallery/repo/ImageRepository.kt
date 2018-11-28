@@ -1,4 +1,6 @@
-package pl.kpmarczynski.gallery
+package pl.kpmarczynski.gallery.repo
+
+import pl.kpmarczynski.gallery.R
 
 class ImageRepository {
     companion object {

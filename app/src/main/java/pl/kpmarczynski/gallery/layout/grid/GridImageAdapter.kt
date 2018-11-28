@@ -1,4 +1,4 @@
-package pl.kpmarczynski.gallery
+package pl.kpmarczynski.gallery.layout.grid
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -6,15 +6,19 @@ import android.util.DisplayMetrics
 import android.view.ViewGroup
 import android.view.WindowManager
 import com.facebook.drawee.view.SimpleDraweeView
+import pl.kpmarczynski.gallery.repo.ImageRepository
 
 class GridImageAdapter(
     private val mContext: Context,
     private val rownum: Int,
-    private val clickListener: (Int) -> Unit
+    private val clickListener: (Int) -> Unit,
+    private val longClickListener: (Int) -> Boolean
 ) : RecyclerView.Adapter<GridImageAdapter.PartViewHolder>() {
 
     class PartViewHolder(val imageView: SimpleDraweeView) : RecyclerView.ViewHolder(imageView) {
-        fun bind(position: Int, clickListener: (Int) -> Unit) {
+        fun bind(position: Int, clickListener: (Int) -> Unit, longClickListener: (Int) -> Boolean) {
+            itemView.isLongClickable = true
+            itemView.setOnLongClickListener { longClickListener(position) }
             itemView.setOnClickListener { clickListener(position) }
         }
     }
@@ -35,7 +39,7 @@ class GridImageAdapter(
         if (imageId != null) {
             holder.imageView.setImageURI("res:/$imageId")
         }
-        holder.bind(position, clickListener)
+        holder.bind(position, clickListener, longClickListener)
     }
 
     override fun getItemCount() = ImageRepository.getCount()
