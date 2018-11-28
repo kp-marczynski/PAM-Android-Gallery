@@ -29,8 +29,8 @@ abstract class AbstractLayoutService(protected val layout: Layout) : Fragment() 
         return inflater.inflate(layout.value, container, false)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onStart() {
+        super.onStart()
         setupLayout(position)
     }
 
