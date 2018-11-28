@@ -14,8 +14,6 @@ abstract class AbstractLayoutService(protected val layout: Layout) : Fragment() 
     abstract fun setupLayout(position: Int)
     abstract fun onBackPressed()
 
-    fun refreshLayout() = setupLayout(this.position)
-
     fun switchView(target: Layout) = (activity as MainActivity).updateView(target, position)
 
     open fun saveState(bundle: Bundle) {

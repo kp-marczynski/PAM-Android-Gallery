@@ -8,7 +8,7 @@ import pl.kpmarczynski.gallery.layout.Layout
 import java.lang.Math.*
 
 
-class TouchListener(val puzzleService: PuzzleService) : View.OnTouchListener {
+class TouchListener(private val puzzleService: PuzzleService) : View.OnTouchListener {
     private var xDelta: Float = 0.toFloat()
     private var yDelta: Float = 0.toFloat()
 
@@ -55,7 +55,7 @@ class TouchListener(val puzzleService: PuzzleService) : View.OnTouchListener {
         return true
     }
 
-    fun sendViewToBack(child: View) {
+    private fun sendViewToBack(child: View) {
         val parent = child.parent as ViewGroup?
         if (null != parent) {
             parent.removeView(child)
