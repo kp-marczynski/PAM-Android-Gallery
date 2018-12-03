@@ -14,8 +14,6 @@ abstract class AbstractLayoutService(protected val layout: Layout) : Fragment() 
     abstract fun setupLayout(position: Int)
     abstract fun onBackPressed()
 
-    fun refreshLayout() = setupLayout(this.position)
-
     fun switchView(target: Layout) = (activity as MainActivity).updateView(target, position)
 
     open fun saveState(bundle: Bundle) {
@@ -31,8 +29,8 @@ abstract class AbstractLayoutService(protected val layout: Layout) : Fragment() 
         return inflater.inflate(layout.value, container, false)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onStart() {
+        super.onStart()
         setupLayout(position)
     }
 
