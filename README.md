@@ -1,4 +1,5 @@
 # PAM-Android-Gallery
 Android gallery &amp; jigsaw puzzle app
 
-![](preview.gif | width=100)
+![](preview.gif)
+<img src="preview.gif" width="108" height="192" />
