@@ -1,4 +1,4 @@
 # PAM-Android-Gallery
 Android gallery &amp; jigsaw puzzle app
 
-![](preview.gif)
+![1080x1920,25%](preview.gif)
